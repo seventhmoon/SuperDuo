@@ -40,4 +40,6 @@ dependencies {
     compile 'com.android.support:support-annotations:23.0.0'
     compile 'com.android.support:design:23.0.0'
     compile 'com.google.android.gms:play-services:7.8.0'
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
+    compile 'com.google.zxing:android-core:3.2.1'
 }

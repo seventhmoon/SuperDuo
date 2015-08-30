@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.BookService;
@@ -96,15 +95,23 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
                 // are using an external app.
                 //when you're done, remove the toast below.
-                Context context = getActivity();
-                CharSequence text = "This button should let you scan a book for its barcode!";
-                int duration = Toast.LENGTH_SHORT;
+//                Context context = getActivity();
+//                CharSequence text = "This button should let you scan a book for its barcode!";
+//                int duration = Toast.LENGTH_SHORT;
+//
+//                Toast toast = Toast.makeText(context, text, duration);
+//                toast.show();
 
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
+//                intent.putExtra("com.google.zxing.client.android.SCAN.SCAN_MODE", "QR_CODE_MODE");
+                startActivityForResult(intent, 0);
+
 
             }
         });
+
+
 
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,6 +137,21 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        if(requestCode == 0){
+            if(resultCode == Activity.RESULT_OK){
+                String contents = intent.getStringExtra("SCAN_RESULT");
+                String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+                Log.i("xZing", "contents: " + contents + " format: " + format); // Handle successful scan
+                ean.setText(contents);
+            } else if(resultCode == Activity.RESULT_CANCELED){ // Handle cancel
+                Log.i("xZing", "Cancelled");
+
+            }
+        }
     }
 
     private void restartLoader(){
@@ -200,8 +222,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        activity.setTitle(R.string.scan);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        getActivity().setTitle(R.string.scan);
+//        activity.setTitle();
     }
 }
